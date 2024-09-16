@@ -1,0 +1,29 @@
+{
+  "_moduleAliases": {
+    "@": "."
+  },
+  "name": "my_events_backend",
+  "private": "true",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.12.1",
+    "axios": "^1.7.7",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.14.0",
+    "handlebars": "^4.7.8",
+    "jwt-decode": "^4.0.0",
+    "mongodb": "^6.8.0",
+    "mongoose": "^8.5.4",
+    "morgan": "^1.10.0",
+    "notdiamond": "^0.3.8",
+    "openai": "^4.57.2",
+    "resend": "^4.0.0",
+    "uuid": "^10.0.0",
+    "yup": "^1.4.0"
+  }
+}
