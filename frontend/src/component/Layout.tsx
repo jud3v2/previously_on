@@ -1,4 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {checkUser, isConnected, protectedPage, logout, setUser} from "../helpers/functions.ts";
+import {Link} from "react-router-dom";
 // Build the page with props and layout props can be null or undefined
 export default function Layout(Component: (props?: any) => JSX.Element, props?: any): JSX.Element {
 
@@ -7,27 +9,31 @@ export default function Layout(Component: (props?: any) => JSX.Element, props?: 
     }
 
     if(props.title === undefined) {
-        props.title = "PreviouslyOn"
+        props.title = "Previously On"
     }
 
     if(props.protected === undefined) {
         props.protected = false
     }
 
-    props.user = localStorage.getItem('user')
-        ? JSON.parse(localStorage.getItem('user')!) : undefined
+    props.user = checkUser()
 
-    if(props.protected && props.user === undefined) {
-        window.location.href = "/login"
+    if(props.protected) {
+        protectedPage();
     }
 
     return (
         <div>
-            <header className={"h-24 bg-black text-white flex items-center"}>
-                <h1 className={"text-2xl"}>PreviouslyOn</h1>
+            <header className={"h-24 bg-black text-white flex items-center justify-around"}>
+                <h1 className={"text-2xl"}>{props.title}</h1>
+                {props.user ? (
+                    <p>{props.user.login}</p>
+                ) : (
+                    <Link to={'/login'}>Connexion</Link>
+                )}
             </header>
-            <main className={'mb-auto h-screen'}>
-                <Component {...props} user={props.user} />
+            <main className={``}>
+                <Component {...props} user={props.user} isConnected={isConnected} setUser={setUser} />
             </main>
             <footer className={'h-24 bg-gray-200 text-gray-700'}>
                 <p>Footer</p>

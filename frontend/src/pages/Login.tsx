@@ -6,7 +6,6 @@ import {toast} from "react-toastify";
 
 
 export default function Login(props: any) {
-    console.log(props)
     const [form, setForm] = useState({
         login: '',
         password: ''
@@ -74,11 +73,10 @@ export default function Login(props: any) {
             if (response.status === 200) {
                 toast.success('Vous êtes connecté: ' + response.data.user.login);
                 localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                window.location.href = '/';
+                props.setUser(response.data.user);
+                window.location.href = '/series';
             }
         } catch (e) {
-            console.log(debouncedPassword, form.password);
             toast.error(e.response.data.errors[0].text);
         }
 
