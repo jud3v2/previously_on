@@ -24,6 +24,7 @@
     "openai": "^4.57.2",
     "resend": "^4.0.0",
     "uuid": "^10.0.0",
+    "v3.0#5awffm0y49t0w": "link:@betaseries/v3.0#5awffm0y49t0w",
     "yup": "^1.4.0"
   }
 }
