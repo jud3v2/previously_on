@@ -4,8 +4,9 @@ import {toast} from "react-toastify";
 import {Link} from "react-router-dom";
 
 export default function Series(props: any) {
-    const [series, setSeries] = useState([]);
-    const [filter, setFilter] = useState({
+    const [series, setSeries] = useState<array>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [filter, setFilter] = useState<object>({
         start: 0,
         limit: 100,
         order: 'popularity',
@@ -26,12 +27,26 @@ export default function Series(props: any) {
     }
 
     useEffect(() => {
-        toast.promise(fetchSeries, {
-            pending: 'Chargement des séries...',
-            success: 'Séries chargées',
-            error: 'Erreur lors du chargement des séries'
-        }).then(r => r)
+        return () => {
+            toast.promise(fetchSeries, {
+                pending: 'Chargement des séries...',
+                success: 'Séries chargées',
+                error: 'Erreur lors du chargement des séries'
+            }).then(() => setLoading(false))
+        }
     }, [filter])
+
+    const addSeriesToAccount = async (e: React.SyntheticEvent, id: number) => {
+        e.preventDefault();
+        try {
+            const response = await axios.post(`/shows/show?id=${id}`);
+            toast.success('Série ajoutée à votre compte')
+            console.log(response)
+        } catch (error) {
+            toast.error(error.response.data.errors[0].text)
+            console.error(error)
+        }
+    }
 
     return (
         <div className={'m-5'}>
@@ -69,17 +84,21 @@ export default function Series(props: any) {
                 <div className={"grid grid-cols-3 gap-3"}>
                     {series?.map((serie: any) => {
                         return (
-                            <div className={"ml-10"}>
+                            <div key={serie.id} className={"ml-10"}>
                                 <Link to={`/series/${serie.id}`}>
                                 <img src={serie.images.poster} alt={serie.title} className={'w-full h-96 rounded object-fit cursor-pointer'}/>
                                 </Link>
                                 <h2 className={"text-xl font-bold text-gray-500 my-2"}>{serie.title}</h2>
-                                <button onClick={() => {}} className={'p-1 rounded text-sm text-center w-full bg-blue-500 font-bold text-white hover:bg-blue-700'}>
+                                <button onClick={e => addSeriesToAccount(e, serie.id)} className={'p-1 rounded text-sm text-center w-full bg-blue-500 font-bold text-white hover:bg-blue-700'}>
                                     + Ajouter à ma liste
                                 </button>
                             </div>
                         )
                     })}
+                    {loading && (
+                        <div className={'text-center'}>
+                            <p>Chargement des séries...</p>
+                        </div>)}
                 </div>
             </div>
 

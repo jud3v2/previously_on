@@ -31,7 +31,7 @@ createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
           <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={Layout(Login, {footerException: false})} />
+              <Route path="/login" element={Layout(Login, {footerException: false, protected: false})} />
               <Route path="/logout" element={Layout(Logout)} />
               <Route path="/series" element={Layout(Series, {protected: true})} />
               <Route path="/series/:id" element={Layout(Serie, {protected: true, footerException: true})} />
