@@ -56,6 +56,9 @@ importers:
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
+      v3.0#5awffm0y49t0w:
+        specifier: link:@betaseries/v3.0#5awffm0y49t0w
+        version: link:@betaseries/v3.0#5awffm0y49t0w
       yup:
         specifier: ^1.4.0
         version: 1.4.0

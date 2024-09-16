@@ -12,4 +12,6 @@ module.exports = {
         betaSeriesApiKey: 'a473506e85cc',
         betaSeriesOauth2Key: '86e612c3a3caf87827bfdf4645bfaddb',
         betaSeriesApiUrl: 'https://api.betaseries.com',
+        betaseriesUsername: 'judikael972',
+        betaseriesPWDMD5: '0224b1716570df287caf8909befde595'
 }

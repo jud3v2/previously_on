@@ -1,5 +1,6 @@
+import React, {useState} from 'react';
 // Build the page with props and layout props can be null or undefined
-export default function Layout(Component: (props?: any) => JSX.Element, props?: any) {
+export default function Layout(Component: (props?: any) => JSX.Element, props?: any): JSX.Element {
 
     if(props === undefined) {
         props = {}
@@ -13,6 +14,9 @@ export default function Layout(Component: (props?: any) => JSX.Element, props?: 
         props.protected = false
     }
 
+    props.user = localStorage.getItem('user')
+        ? JSON.parse(localStorage.getItem('user')!) : undefined
+
     if(props.protected && props.user === undefined) {
         window.location.href = "/login"
     }
@@ -22,8 +26,8 @@ export default function Layout(Component: (props?: any) => JSX.Element, props?: 
             <header className={"h-24 bg-black text-white flex items-center"}>
                 <h1 className={"text-2xl"}>PreviouslyOn</h1>
             </header>
-            <main className={'container mb-auto h-screen'}>
-                <Component {...props} />
+            <main className={'mb-auto h-screen'}>
+                <Component {...props} user={props.user} />
             </main>
             <footer className={'h-24 bg-gray-200 text-gray-700'}>
                 <p>Footer</p>
