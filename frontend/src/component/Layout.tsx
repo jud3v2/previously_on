@@ -41,8 +41,10 @@ export default function Layout(Component: (props?: any) => JSX.Element, props?: 
             <main className={``}>
                 <Component {...props} user={props.user} isConnected={isConnected} setUser={setUser} />
             </main>
-            <footer className={'flex h-24 bg-gray-200 text-gray-700 items-center '}>
-                <p>Footer</p>
+            <footer className={'flex h-16 bg-gray-200 text-gray-700 items-center'}>
+                <p className='flex mx-auto sticky bottom-0 text-center'>
+                    Projet PreviouslyOn - Judikaël BELLANCE & Maxime CARON - Tout droit réservé @2024
+                </p>
             </footer>
         </div>
     )
