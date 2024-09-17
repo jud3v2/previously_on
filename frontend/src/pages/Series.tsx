@@ -55,9 +55,8 @@ export default function Series(props: any) {
 
     return (
         <div className={'m-5'}>
-            <h1>Liste des séries populaire</h1>
             {/*Filtre*/}
-            <div className={'h-24 bg-gray-200 mt-3 rounded py-2'}>
+            <div className={'container mx-auto h-24 bg-white shadow-xl mt-10 rounded py-2 mb-10'}>
                 <div className={"m-2 flex justify-around"}>
                     <div>
                         Filtre
@@ -83,10 +82,10 @@ export default function Series(props: any) {
                 </div>
             </div>
             {/* Fin des filtres*/}
+            <h1 className='text-2xl ml-44'>Liste des séries populaire :</h1>
             {/*Affichage des séries*/}
-
             <div className={"flex mx-auto justify-center mt-10"}>
-                <div className={"grid grid-cols-3 gap-3"}>
+                <div className={"grid grid-cols-5 gap-3"}>
                     {series?.map((serie: any) => {
                         return <SerieCard key={serie.id} serie={serie} memberSeries={memberSeries} setMemberSeries={setMemberSeries} />
                     })}
