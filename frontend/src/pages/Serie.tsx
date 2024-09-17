@@ -3,11 +3,16 @@ import {useParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import SeasonComponent from "../component/SeasonComponent.tsx";
+import ListOfSeasonComponent from "../component/ListOfSeasonComponent.tsx";
 
 export default function Serie(props: any) {
     const {id} = useParams();
     const [serie, setSerie] = useState({});
     const [episodes, setEpisodes] = useState([]);
+    const [currentSeason, setCurrentSeason] = useState(1);
+    const [filteredEpisodes, setFilteredEpisodes] = useState([]);
+    const [filterEpisodeSeen, setFilterEpisodeSeen] = useState(true);
 
     const fetchSerie = async () => {
         try {
@@ -18,7 +23,13 @@ export default function Serie(props: any) {
         }
     }
 
-    const fetchEpisodes = async () => {
+    const fetchSeriesEpisodesWithSeason = async () => {
+         const episodes = await axios.get('/shows/episodes?id=' + id);
+         setEpisodes(episodes.data.episodes);
+         setFilteredEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
+    }
+
+    const fetchMemberEpisodes = async () => {
         try {
             const response = await axios.get(`/episodes/list?id=${id}`);
             setEpisodes(response.data.shows)
@@ -31,9 +42,8 @@ export default function Serie(props: any) {
     const addSeriesToAccount = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`/shows/show?id=${id}`);
+            await axios.post(`/shows/show?id=${id}`);
             toast.success('Série ajoutée à votre compte')
-            console.log(response)
         } catch (error) {
             console.error(error)
         }
@@ -42,9 +52,8 @@ export default function Serie(props: any) {
     const archiveSerie = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`/shows/archive?id=${id}`);
+            await axios.post(`/shows/archive?id=${id}`);
             toast.success('Série archivée')
-            console.log(response)
         } catch (error) {
             await addSeriesToAccount(e);
             await archiveSerie(e);
@@ -58,12 +67,22 @@ export default function Serie(props: any) {
             error: 'Erreur lors du chargement de la série'
         }).then(r => r)
 
-        toast.promise(fetchEpisodes, {
+        toast.promise(fetchSeriesEpisodesWithSeason, {
             pending: 'Chargement des épisodes...',
             success: 'Épisodes chargés',
             error: 'Erreur lors du chargement des épisodes'
         }).then(r => r)
     }, [id])
+
+    useEffect(() => {
+        if(currentSeason) {
+            // if the series have more than one season, we filter the episodes to show only the episodes of the current season
+            setFilteredEpisodes(episodes.filter((episode: any) => episode.season === currentSeason))
+        } else {
+            // if the series have only one season, we show all the episodes
+            setFilteredEpisodes(episodes)
+        }
+    }, [currentSeason])
 
     const genres = serie.genres ?  Object.keys(serie?.genres)?.map(key => serie?.genres[key]) : null;
 
@@ -98,6 +117,10 @@ export default function Serie(props: any) {
                         })}
                     </ul>
                 </div>
+            </div>
+            <div>
+                <SeasonComponent serie={serie} setCurrentSeason={setCurrentSeason} currentSeason={currentSeason} />
+                <ListOfSeasonComponent currentSeason={currentSeason} filteredEpisodes={filteredEpisodes} setFilteredEpisodes={setFilteredEpisodes} filterEpisodeSeen={filterEpisodeSeen} setFilterEpisodeSeen={setFilterEpisodeSeen} />
             </div>
         </div>
     )

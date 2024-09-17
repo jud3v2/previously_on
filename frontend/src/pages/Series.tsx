@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {toast} from "react-toastify";
-import {Link} from "react-router-dom";
+import SerieCard from "../component/SerieCard.tsx";
 
 export default function Series(props: any) {
-    const [series, setSeries] = useState([]);
-    const [filter, setFilter] = useState({
+    const [series, setSeries] = useState<array>([]);
+    const [memberSeries, setMemberSeries] = useState<array>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [filter, setFilter] = useState<object>({
         start: 0,
         limit: 100,
         order: 'popularity',
@@ -25,12 +27,30 @@ export default function Series(props: any) {
         }
     }
 
+    const fetchMemberSeries = async () => {
+        try {
+            const response = await axios.get(`/shows/member`);
+            console.log(response.data)
+            setMemberSeries(response.data.shows)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     useEffect(() => {
-        toast.promise(fetchSeries, {
-            pending: 'Chargement des séries...',
-            success: 'Séries chargées',
-            error: 'Erreur lors du chargement des séries'
-        }).then(r => r)
+        return () => {
+            toast.promise(fetchSeries, {
+                pending: 'Chargement des séries...',
+                success: 'Séries chargées',
+                error: 'Erreur lors du chargement des séries'
+            }).then(() => setLoading(false))
+
+            toast.promise(fetchMemberSeries, {
+                pending: 'Chargement de vos séries...',
+                success: 'Vos séries sont chargées',
+                error: 'Erreur lors du chargement de vos séries'
+            }).then(() => setLoading(false))
+        }
     }, [filter])
 
     return (
@@ -68,18 +88,12 @@ export default function Series(props: any) {
             <div className={"flex mx-auto justify-center mt-10"}>
                 <div className={"grid grid-cols-3 gap-3"}>
                     {series?.map((serie: any) => {
-                        return (
-                            <div className={"ml-10"}>
-                                <Link to={`/series/${serie.id}`}>
-                                <img src={serie.images.poster} alt={serie.title} className={'w-full h-96 rounded object-fit cursor-pointer'}/>
-                                </Link>
-                                <h2 className={"text-xl font-bold text-gray-500 my-2"}>{serie.title}</h2>
-                                <button onClick={() => {}} className={'p-1 rounded text-sm text-center w-full bg-blue-500 font-bold text-white hover:bg-blue-700'}>
-                                    + Ajouter à ma liste
-                                </button>
-                            </div>
-                        )
+                        return <SerieCard key={serie.id} serie={serie} memberSeries={memberSeries} setMemberSeries={setMemberSeries} />
                     })}
+                    {loading && (
+                        <div className={'text-center'}>
+                            <p>Chargement des séries...</p>
+                        </div>)}
                 </div>
             </div>
 

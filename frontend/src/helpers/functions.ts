@@ -15,7 +15,7 @@ export function logout() {
 }
 
 export function protectedPage() {
-    if (!isConnected()) {
+    if (!isConnected() && window.location.pathname !== '/login') {
          window.location.href = '/login'
     }
 }
