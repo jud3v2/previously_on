@@ -15,6 +15,7 @@ import Layout from "./component/Layout.tsx";
 import {frontendConfig} from "./config";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import Episode from "./pages/Episode.tsx";
 
 axios.interceptors.request.use(config => {
     config.headers['X-BetaSeries-Key'] = frontendConfig.betaSeriesApiKey;
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="/logout" element={Layout(Logout)} />
               <Route path="/series" element={Layout(Series, {protected: true})} />
               <Route path="/series/:id" element={Layout(Serie, {protected: true, footerException: true})} />
+              <Route path="/episode/:id" element={Layout(Episode, {protected: true, footerException: true})} />
           </Routes>
       </BrowserRouter>
       <ToastContainer
