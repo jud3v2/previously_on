@@ -5,6 +5,7 @@ import axios from "axios";
 import {Link} from "react-router-dom";
 import SeasonComponent from "../component/SeasonComponent.tsx";
 import ListOfSeasonComponent from "../component/ListOfSeasonComponent.tsx";
+import {useQuery} from "@tanstack/react-query";
 
 export default function Serie(props: any) {
     const {id} = useParams();
@@ -18,6 +19,7 @@ export default function Serie(props: any) {
         try {
             const response = await axios.get(`/shows/display?id=${id}&summary=true&includes=seasons,episodes,summaries,summary,actors,alternatives,images,videos`);
             setSerie(response.data.show)
+            return response.data;
         } catch (error) {
             console.error(error)
         }
@@ -27,12 +29,14 @@ export default function Serie(props: any) {
          const episodes = await axios.get('/shows/episodes?id=' + id);
          setEpisodes(episodes.data.episodes);
          setFilteredEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
+         return episodes.data;
     }
 
     const fetchMemberEpisodes = async () => {
         try {
             const response = await axios.get(`/episodes/list?id=${id}`);
             setEpisodes(response.data.shows)
+            return response.data;
         } catch (error) {
             console.error(error)
         }
@@ -60,19 +64,34 @@ export default function Serie(props: any) {
         }
     }
 
-    useEffect(() => {
-        toast.promise(fetchSerie, {
-            pending: 'Chargement de la série...',
-            success: 'Série chargée',
-            error: 'Erreur lors du chargement de la série'
-        }).then(r => r)
+    const { data: seriesEpisodesWithSeason, isLoading: seriesEpisodesWithSeasonIsLoading } = useQuery({
+        queryKey: ['seriesEpisodesWithSeason', id],
+        queryFn: fetchSeriesEpisodesWithSeason
+    });
 
-        toast.promise(fetchSeriesEpisodesWithSeason, {
-            pending: 'Chargement des épisodes...',
-            success: 'Épisodes chargés',
-            error: 'Erreur lors du chargement des épisodes'
-        }).then(r => r)
-    }, [id])
+    const { data: memberEpisodes, isLoading: memberEpisodesIsLoading } = useQuery({
+        queryKey: ['memberEpisodes', id],
+        queryFn: fetchMemberEpisodes
+    });
+
+    const { data: serieData, isLoading: serieIsLoading } = useQuery({
+        queryKey: ['serie', id],
+        queryFn: fetchSerie
+    });
+
+    useEffect(() => {
+        if(serieData) {
+            setSerie(serieData.show);
+        }
+
+        if(seriesEpisodesWithSeason) {
+            setEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
+        }
+
+        if(memberEpisodes) {
+            setEpisodes(memberEpisodes.shows);
+        }
+    }, []);
 
     useEffect(() => {
         if(currentSeason) {
@@ -85,6 +104,10 @@ export default function Serie(props: any) {
     }, [currentSeason])
 
     const genres = serie.genres ?  Object.keys(serie?.genres)?.map(key => serie?.genres[key]) : null;
+
+    if(serieIsLoading || seriesEpisodesWithSeasonIsLoading || memberEpisodesIsLoading) {
+        return <div>Chargement des informations de la série...</div>
+    }
 
     return (
         <div>

@@ -17,7 +17,9 @@ import {frontendConfig} from "./config";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Episode from "./pages/Episode.tsx";
-
+import dayjs from "dayjs";
+import 'dayjs/locale/fr';
+dayjs.locale('fr');
 axios.interceptors.request.use(config => {
     config.headers['X-BetaSeries-Key'] = frontendConfig.betaSeriesApiKey;
     if(localStorage.getItem('token')) {

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {toast} from "react-toastify";
 import SerieCard from "../component/SerieCard.tsx";
+import {useQuery} from '@tanstack/react-query';
 
 export default function Series(props: any) {
     const [series, setSeries] = useState<array>([]);
@@ -9,7 +10,7 @@ export default function Series(props: any) {
     const [loading, setLoading] = useState<boolean>(true);
     const [filter, setFilter] = useState<object>({
         start: 0,
-        limit: 100,
+        limit: 20,
         order: 'popularity',
         filter: 'all',
         platform: 'all',
@@ -20,8 +21,8 @@ export default function Series(props: any) {
     const fetchSeries = async () => {
         try {
             const response = await axios.get(`/shows/list?start=${filter.start}&limit=${filter.limit}&order=${filter.order}&filter=${filter.filter}&platform=${filter.platform}&country=${filter.country}&locale=${filter.locale}`);
-            console.log(response.data)
             setSeries(response.data.shows)
+            return response.data
         } catch (error) {
             console.error(error)
         }
@@ -30,28 +31,33 @@ export default function Series(props: any) {
     const fetchMemberSeries = async () => {
         try {
             const response = await axios.get(`/shows/member`);
-            console.log(response.data)
             setMemberSeries(response.data.shows)
+            return response.data
         } catch (error) {
             console.error(error)
         }
     }
 
-    useEffect(() => {
-        return () => {
-            toast.promise(fetchSeries, {
-                pending: 'Chargement des séries...',
-                success: 'Séries chargées',
-                error: 'Erreur lors du chargement des séries'
-            }).then(() => setLoading(false))
+    const {data: seriesData, isLoading: seriesIsLoading} = useQuery({
+        queryKey: ['series', filter],
+        queryFn: fetchSeries,
+        staleTime: 1000 * 60 * 60 // 1 hour
+    });
 
-            toast.promise(fetchMemberSeries, {
-                pending: 'Chargement de vos séries...',
-                success: 'Vos séries sont chargées',
-                error: 'Erreur lors du chargement de vos séries'
-            }).then(() => setLoading(false))
+    const {data: memberSeriesData, isLoading: memberSeriesIsLoading} = useQuery({
+        queryKey: ['memberSeries', props.user.id],
+        queryFn: fetchMemberSeries
+    });
+
+    useEffect(() => {
+        if(seriesData) {
+            setSeries(seriesData.shows)
         }
-    }, [filter])
+
+        if(memberSeriesData) {
+            setMemberSeries(memberSeriesData.shows)
+        }
+    }, []);
 
     return (
         <div className={'m-5'}>
@@ -86,6 +92,12 @@ export default function Series(props: any) {
             {/*Affichage des séries*/}
             <div className={"flex mx-auto justify-center mt-10"}>
                 <div className={"grid grid-cols-5 gap-3"}>
+                    {seriesIsLoading && memberSeriesIsLoading && (
+                        <div className={'text-center'}>
+                            <p>Chargement des séries...</p>
+                        </div>
+                    )}
+
                     {series?.map((serie: any) => {
                         return <SerieCard key={serie.id} serie={serie} memberSeries={memberSeries} setMemberSeries={setMemberSeries} />
                     })}

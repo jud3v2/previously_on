@@ -2,9 +2,23 @@ import React, { useState } from 'react';
 import {checkUser, isConnected, protectedPage, logout, setUser} from "../helpers/functions.ts";
 import { Link } from "react-router-dom";
 import logo from '/pictures/logo-previously-black.png';
+import {
+    QueryClient,
+    QueryClientProvider,
+} from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 
 // Build the page with props and layout props can be null or undefined
 export default function Layout({ Component, props }: { Component: (props?: any) => JSX.Element; props?: any }): JSX.Element {
+    const queryClient = new QueryClient({
+        defaultOptions: {
+            queries: {
+                refetchOnWindowFocus: false,
+                staleTime: Infinity,
+            },
+        },
+    })
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
     if (props === undefined) {
@@ -26,6 +40,7 @@ export default function Layout({ Component, props }: { Component: (props?: any) 
     }
 
     return (
+        <QueryClientProvider client={queryClient}>
         <div className='h-screen'>
             <header className={"h-24 bg-white text-black flex justify-between items-center border border-b-2 border-black shadow-md"}>
                 <div className={'flex items-center ml-40 space-x-10'}>
@@ -71,5 +86,7 @@ export default function Layout({ Component, props }: { Component: (props?: any) 
                 </p>
             </footer>
         </div>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     );
 }
