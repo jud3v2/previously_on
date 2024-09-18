@@ -37,14 +37,23 @@ export default function Layout({ Component, props }: { Component: (props?: any) 
                 <div className='mr-40 relative'>
                     {props.user ? (
                         <div
-                            onMouseEnter={() => setDropdownOpen(true)}
-                            onMouseLeave={() => setDropdownOpen(false)}
+                            onMouseEnter={() => {
+                                console.log("Dropdown opened");
+                                setDropdownOpen(true);
+                            }}
+                            onMouseLeave={() => {
+                                console.log("Dropdown closed");
+                                setDropdownOpen(false);
+                            }}
                         >
-                            <p className="cursor-pointer">{props.user.login}</p>
+                            <p className="cursor-pointer">
+                                {props.user.login}
+                                <span>▼</span>
+                            </p>
                             {dropdownOpen && (
                                 <div className="absolute bg-white shadow-md rounded">
-                                    <Link to="/profile" className="block px-4 py-2 text-black">Profil</Link>
-                                    <button onClick={logout} className="block w-full text-left px-4 py-2 text-black">Déconnexion</button>
+                                    <Link to="/profile" className="block px-4 py-2 text-black hover:bg-gray-200">Profil</Link>
+                                    <button onClick={logout} className="block w-full text-left px-4 py-2 text-black hover:bg-gray-200">Déconnexion</button>
                                 </div>
                             )}
                         </div>
