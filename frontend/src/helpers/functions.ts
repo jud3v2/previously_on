@@ -1,7 +1,13 @@
+import axios from "axios";
+
 export function checkUser() {
     return localStorage.getItem('user')
         ? JSON.parse(localStorage.getItem('user')!)
         : undefined
+}
+
+export function fetchUserData() {
+    return checkUser() ? axios.get('/members/infos').then(r => r.data.member) : checkUser();
 }
 
 export function isConnected() {

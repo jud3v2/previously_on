@@ -1,13 +1,8 @@
 import React, {useState, useEffect} from 'react';
 
 export default function Profile(props: any) {
-    const [user, setUser] = useState<any>({});
-
-    useEffect(() => {
-        setUser(props.user);
-    }, [props.user]);
-
-    console.log(user);
+    const { user }= props
+    console.log(props);
 
     return (
         <div className='container mx-auto mt-10'>

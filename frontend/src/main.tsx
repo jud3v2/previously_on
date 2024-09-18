@@ -39,7 +39,7 @@ createRoot(document.getElementById('root')!).render(
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={AppLayout(Login, { footerException: false, protected: false })} />
-                <Route path="/logout" element={AppLayout(Logout)} />
+                <Route path="/logout" element={AppLayout(Logout,{protected: false})} />
                 <Route path="/series" element={AppLayout(Series, { protected: true })} />
                 <Route path="/series/:id" element={AppLayout(Serie, { protected: true, footerException: true })} />
                 <Route path="/episode/:id" element={AppLayout(Episode, { protected: true, footerException: true })} />

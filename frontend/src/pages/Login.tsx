@@ -3,6 +3,7 @@ import {frontendConfig} from "../config";
 import CryptoJS from 'crypto-js';
 import axios from 'axios';
 import {toast} from "react-toastify";
+import {fetchUserData} from "../helpers/functions.ts";
 
 
 export default function Login(props: any) {
@@ -74,7 +75,11 @@ export default function Login(props: any) {
                 toast.success('Vous êtes connecté: ' + response.data.user.login);
                 localStorage.setItem('token', response.data.token);
                 props.setUser(response.data.user);
-                window.location.href = '/series';
+                // tricks handle user data into localstorage
+                fetchUserData().then(r => localStorage.setItem('user', JSON.stringify(r)));
+                setTimeout(() => {
+                    window.location.href = '/series';
+                }, 350)
             }
         } catch (e) {
             toast.error(e.response.data.errors[0].text);

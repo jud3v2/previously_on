@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { checkUser, isConnected, protectedPage, logout, setUser } from "../helpers/functions.ts";
+import {checkUser, isConnected, protectedPage, logout, setUser} from "../helpers/functions.ts";
 import { Link } from "react-router-dom";
 import logo from '/pictures/logo-previously-black.png';
 
