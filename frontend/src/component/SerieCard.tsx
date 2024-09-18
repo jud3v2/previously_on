@@ -44,13 +44,13 @@ export default function SerieCard(props: any) {
                         className={'w-full h-96 rounded object-fit cursor-pointer hover:opacity-50'}/>
                 </Link>
                 <div className='absolute bottom-10 left-3 z-10'>
-                    <h2 className={"text-xl text-white font-bold text-gray-500 my-2"}>{props.serie.title}</h2>
+                    <h2 className={"text-xl text-white font-bold text-white my-2"}>{props.serie.title}</h2>
                 </div>
                 <div className='absolute top-2 left-2 z-10 border border-2 border-white px-4 rounded-full'>
-                    <h2 className={"text-lg text-white font-bold text-gray-500 my-2"}>{props.serie.creation}</h2>
+                    <h2 className={"text-lg text-white font-bold text-white my-2"}>{props.serie.creation}</h2>
                 </div>
                 <div className='absolute top-16 left-2 z-10 border border-2 border-white px-4 rounded-full'>
-                    <h2 className={"text-lg text-white font-bold text-gray-500 my-2"}>{props.serie.episodes} épisodes</h2>
+                    <h2 className={"text-lg text-white font-bold text-white my-2"}>{props.serie.episodes} épisodes</h2>
                 </div>
 
             </div>

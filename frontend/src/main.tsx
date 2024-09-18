@@ -5,6 +5,7 @@ import Login from './pages/Login.tsx'
 import Logout from './pages/Logout.tsx'
 import Series from './pages/Series.tsx'
 import Serie from './pages/Serie.tsx'
+import Profile from './pages/Profile.tsx'
 import {
     BrowserRouter,
     Routes,
@@ -26,32 +27,38 @@ axios.interceptors.request.use(config => {
     return config;
 })
 
+const AppLayout = (Component: any, props: any) => {
+    return (
+        <Layout Component={Component} props={props} />
+    );
+};
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-      <BrowserRouter>
-          <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={Layout(Login, {footerException: false, protected: false})} />
-              <Route path="/logout" element={Layout(Logout)} />
-              <Route path="/series" element={Layout(Series, {protected: true})} />
-              <Route path="/series/:id" element={Layout(Serie, {protected: true, footerException: true})} />
-              <Route path="/episode/:id" element={Layout(Episode, {protected: true, footerException: true})} />
-          </Routes>
-      </BrowserRouter>
-      <ToastContainer
-          position="bottom-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-          transition: Bounce
-          stacked={true}
-      />
-  </StrictMode>,
-)
+    <StrictMode>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={AppLayout(Login, { footerException: false, protected: false })} />
+                <Route path="/logout" element={AppLayout(Logout)} />
+                <Route path="/series" element={AppLayout(Series, { protected: true })} />
+                <Route path="/series/:id" element={AppLayout(Serie, { protected: true, footerException: true })} />
+                <Route path="/episode/:id" element={AppLayout(Episode, { protected: true, footerException: true })} />
+                <Route path="/profile" element={AppLayout(Profile, { protected: true, footerException: true })} />
+            </Routes>
+        </BrowserRouter>
+        <ToastContainer
+            position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+            transition="Bounce"
+            stacked={true}
+        />
+    </StrictMode>,
+);
