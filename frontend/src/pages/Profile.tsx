@@ -1,25 +1,131 @@
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import axios from "axios";
+import { toast } from 'react-toastify';
+import { fetchUserData } from "../helpers/functions.ts";
+import StatistiqueCard from "../component/StatistiqueCard.tsx";
+import FriendsList from "../component/FriendsList.tsx";
+import AddFriendModal from './AddFriendModal.tsx';
 
 export default function Profile(props: any) {
-    const { user }= props
-    console.log(props);
+    const { user } = props;
+    const [formDataState, setFormDataState] = useState<any>({});
+    const [loading, setLoading] = useState<boolean>(false);
+    const [avatarUser, setAvatarUser] = useState<string>('');
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [isFileSelected, setIsFileSelected] = useState<boolean>(false);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [friends, setFriends] = useState<any[]>([]);
+
+    const handleAvatarChange = (event: any) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            setFormDataState(formData);
+            setIsFileSelected(true);
+        }
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        setLoading(true);
+        axios.post('https://api.betaseries.com/members/avatar', formDataState, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+        .then(response => {
+            console.log(response);
+            props.setUser(JSON.stringify(response.data.member));
+            fetchUserData().then(r => localStorage.setItem('user', JSON.stringify(r)));
+            const newAvatarUrl = URL.createObjectURL(formDataState.get('avatar'));
+            setAvatarUser(newAvatarUrl);
+            setIsFileSelected(false);
+            toast.success('Avatar mis à jour');
+        })
+        .catch(error => {
+            console.log(error);
+        })
+        .finally(() => {
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
+        });
+    };
+
+    const handleAvatarUser = () => {
+        axios.get('https://api.betaseries.com/pictures/members?id=' + props.user.id, { responseType: 'arraybuffer' })
+        .then(response => {
+            console.log(response);
+            const blob = new Blob([response.data], { type: 'image/png' });
+            const url = URL.createObjectURL(blob);
+            setAvatarUser(url);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    };
+
+    const fetchFriends = () => {
+        axios.get('https://api.betaseries.com/friends/list?id=' + props.user.id)
+        .then(response => {
+            setFriends(response.data.users);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    };
+
+    useEffect(() => {
+        handleAvatarUser();
+        fetchFriends();
+    }, [props.user.id]);
+
+    console.log(friends);
+    console.log(user);
 
     return (
         <div className='container mx-auto mt-10'>
             <h1 className={'text-2xl'}>Mon profil :</h1>
             <div className={'flex flex-col'}>
-                <div className={'flex flex-col mt-5'}>
-                    {user.picture ? (
-                        <img src={user.picture} alt={'Photo de ' + user.login} className={'w-40 h-40 rounded-full'} />
-                    ) : (
-                        <img src={'/pictures/default-pic.jpg'} alt={'Photo de ' + user.login} className={'w-40 h-40 rounded-full border border-1 border-black'} />
-                    )}
+                <div className={'flex mt-5'}>
+                    <div className='flex flex-col'>
+                        <img
+                            src={loading || !user.avatar ? '/pictures/default-pic.jpg' : avatarUser}
+                            alt={'Photo de ' + user.login}
+                            className={'w-40 h-40 rounded-full border border-1 border-black cursor-pointer hover:ring-2 hover:ring-blue-500'}
+                            onClick={() => fileInputRef.current?.click()}
+                        />
+                        {isFileSelected && (
+                            <button className='bg-transparent border border-1 border-black text-black hover:bg-black hover:text-white duration-300 ease-in rounded-full p-2 mt-2' onClick={handleClick}>Update Avatar</button>
+                        )}
+                    </div>
+                    <div className='flex flex-col'>
+                        <h1 className={'text-2xl font-bold ml-5 mb-2'}>{user.login}</h1>
+                        <div className='mt-3 ml-5'>
+                            <StatistiqueCard user={user} />
+                        </div>
+                    </div>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        ref={fileInputRef}
+                        style={{ display: 'none' }}
+                    />
                 </div>
                 <div className={'flex flex-col mt-5'}>
-                    <h1 className={'text-xl'}>Nom d'utilisateur : {user.login}</h1>
-                    <p className={'text-sm'}>{user.email}</p>
+                    <h1 className={'text-2xl'}>Mes ami(es) :</h1>
+                    <FriendsList friends={friends} />
+                    <button
+                        className="bg-blue-500 text-white mt-4 p-2 rounded-lg"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Ajouter un ami
+                    </button>
                 </div>
             </div>
+            <AddFriendModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
-    )
+    );
 }
