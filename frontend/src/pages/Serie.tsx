@@ -6,6 +6,8 @@ import {Link} from "react-router-dom";
 import SeasonComponent from "../component/SeasonComponent.tsx";
 import ListOfSeasonComponent from "../component/ListOfSeasonComponent.tsx";
 import {useQuery} from "@tanstack/react-query";
+import Skeleton from "@mui/material/Skeleton";
+import {Box} from "@mui/material";
 
 export default function Serie(props: any) {
     const {id} = useParams();
@@ -14,6 +16,7 @@ export default function Serie(props: any) {
     const [currentSeason, setCurrentSeason] = useState(1);
     const [filteredEpisodes, setFilteredEpisodes] = useState([]);
     const [filterEpisodeSeen, setFilterEpisodeSeen] = useState(true);
+    const [loading, setLoading] = useState(true);
 
     const fetchSerie = async () => {
         try {
@@ -22,6 +25,8 @@ export default function Serie(props: any) {
             return response.data;
         } catch (error) {
             console.error(error)
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -56,11 +61,22 @@ export default function Serie(props: any) {
     const archiveSerie = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(`/shows/archive?id=${id}`);
+            const {data} = await axios.post(`/shows/archive?id=${id}`);
+            setSerie(data.show);
             toast.success('Série archivée')
         } catch (error) {
             await addSeriesToAccount(e);
             await archiveSerie(e);
+        }
+    }
+    const unarchiveSerie = async (e) => {
+        e.preventDefault();
+        try {
+            const {data} = await axios.delete(`/shows/archive?id=${id}`);
+            setSerie(data.show);
+            toast.success('Série désarchivée')
+        } catch (error) {
+            toast.error('Erreur lors de l\'archivage de la série ' + error.response.data.errors[0].text )
         }
     }
 
@@ -104,46 +120,135 @@ export default function Serie(props: any) {
     }, [currentSeason])
 
     const genres = serie.genres ?  Object.keys(serie?.genres)?.map(key => serie?.genres[key]) : null;
+    const loadingLimit = 1;
 
-    if(serieIsLoading || seriesEpisodesWithSeasonIsLoading || memberEpisodesIsLoading) {
-        return <div>Chargement des informations de la série...</div>
-    }
 
     return (
         <div>
-            <Link to={'/series'} className={"underline m-3"}>Retour en arrière</Link>
-            <div className={'m-3'}>
-                <h1 className={"text-2xl font-bold"}>{serie?.title}</h1>
+            {/* Back Link */}
+            <Link to={'/series'} className="underline m-3">
+                Retour en arrière
+            </Link>
+
+            {/* Title */}
+            <div className="m-3">
+                {loading ? (
+                    <Skeleton variant="text" width={200} height={40}/>
+                ) : (
+                    <h1 className="text-2xl font-bold">{serie?.title}</h1>
+                )}
             </div>
-            <div className={"flex"}>
-                <div className={'m-3'}>
-                    <img src={serie?.images?.poster} alt={serie?.title} className={"w-48 h-64 object-fit"} />
-                    <button className={'p-1 text-sm bg-blue-500 text-white hover:bg-blue-700 mt-1 rounded w-full'} onClick={archiveSerie}>
-                        Archiver la série
-                    </button>
-                </div>
-                <div className={'m-3'}>
-                    <h2 className={"text-xl font-bold"}>Description</h2>
-                    <p>{serie?.description}</p>
-                    <h2 className={"text-xl font-bold"}>Nombre de saison:</h2>
-                    <p>{serie?.seasons} saison(s) pour un nombre d'épisode totale: {serie?.episodes}</p>
-                    <h2 className={"text-xl font-bold"}>Longueur moyenne des épisodes:</h2>
-                    <p>{serie?.length} minutes</p>
-                    <h2 className={"text-xl font-bold"}>Note du publique:</h2>
-                    <p>{serie?.notes?.mean.toFixed(2)}/5 sur un total de {serie?.notes?.total} avis</p>
-                    <h2 className={"text-xl font-bold"}>Liste des genres:</h2>
-                    <ul>
-                        {genres?.map((genre: any) => {
-                            return (
-                                <li key={genre}>{genre}</li>
-                            )
-                        })}
-                    </ul>
-                </div>
+
+            {/* Main Content */}
+            <div className="flex">
+                {/* Skeletons or Real Content */}
+                {serieIsLoading || seriesEpisodesWithSeasonIsLoading || memberEpisodesIsLoading
+                    ? Array(loadingLimit)
+                        .fill(0)
+                        .map((_, i) => (
+                            <Box
+                                key={i}
+                                sx={{
+                                    width: 200,
+                                    height: 400,
+                                    position: 'relative',
+                                    borderRadius: '16px',
+                                    overflow: 'hidden',
+                                }}
+                                className="mx-auto m-3"
+                            >
+                                {/* Image Skeleton */}
+                                <Skeleton variant="rectangular" width="100%" height="100%"/>
+
+                                {/* Top-left badge Skeleton (Year) */}
+                                <div className="absolute top-2 left-2 px-2 py-1 rounded-full">
+                                    <Skeleton width={40} height={20}/>
+                                </div>
+
+                                {/* Top-right badge Skeleton (Episodes) */}
+                                <div className="absolute top-2 right-2 px-2 py-1 rounded-full">
+                                    <Skeleton width={40} height={20}/>
+                                </div>
+
+                                {/* Bottom Button Skeleton */}
+                                <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+                                    <Skeleton width="75%" height={40}/>
+                                </div>
+                            </Box>
+                        ))
+                    : (
+                        <div className="flex">
+                            {/* Image and Archive Button Section */}
+                            <div className="m-3">
+                                <img
+                                    src={serie?.images?.poster}
+                                    alt={serie?.title}
+                                    className="w-48 h-64 object-fit"
+                                />
+                                {serie?.user?.archived ? (
+                                    <button
+                                        className="p-1 text-sm bg-red-500 text-white hover:bg-blue-700 mt-1 rounded w-full"
+                                        onClick={unarchiveSerie}
+                                    >
+                                        Désarchiver la série
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="p-1 text-sm bg-blue-500 text-white hover:bg-blue-700 mt-1 rounded w-full"
+                                        onClick={archiveSerie}
+                                    >
+                                        Archiver la série
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Description and Details Section */}
+                            <div className="m-3">
+                                <h2 className="text-xl font-bold">Description</h2>
+                                <p>{serie?.description}</p>
+
+                                <h2 className="text-xl font-bold">Nombre de saison:</h2>
+                                <p>
+                                    {serie?.seasons} saison(s) pour un nombre d'épisode total: {serie?.episodes}
+                                </p>
+
+                                <h2 className="text-xl font-bold">Longueur moyenne des épisodes:</h2>
+                                <p>{serie?.length} minutes</p>
+
+                                <h2 className="text-xl font-bold">Note du publique:</h2>
+                                <p>
+                                    {serie?.notes?.mean.toFixed(2)}/5 sur un total de {serie?.notes?.total} avis
+                                </p>
+
+                                <h2 className="text-xl font-bold">Liste des genres:</h2>
+                                <ul>
+                                    {genres?.map((genre) => (
+                                        <li key={genre}>{genre}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
             </div>
+
+            {/* Season Components */}
             <div>
-                <SeasonComponent serie={serie} setCurrentSeason={setCurrentSeason} currentSeason={currentSeason} />
-                <ListOfSeasonComponent currentSeason={currentSeason} filteredEpisodes={filteredEpisodes} setFilteredEpisodes={setFilteredEpisodes} filterEpisodeSeen={filterEpisodeSeen} setFilterEpisodeSeen={setFilterEpisodeSeen} />
+                {!loading && (
+                    <>
+                        <SeasonComponent
+                            serie={serie}
+                            setCurrentSeason={setCurrentSeason}
+                            currentSeason={currentSeason}
+                        />
+                        <ListOfSeasonComponent
+                            currentSeason={currentSeason}
+                            filteredEpisodes={filteredEpisodes}
+                            setFilteredEpisodes={setFilteredEpisodes}
+                            filterEpisodeSeen={filterEpisodeSeen}
+                            setFilterEpisodeSeen={setFilterEpisodeSeen}
+                        />
+                    </>
+                )}
             </div>
         </div>
     )

@@ -8,7 +8,6 @@ import {
 } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-
 // Build the page with props and layout props can be null or undefined
 export default function Layout({ Component, props }: { Component: (props?: any) => JSX.Element; props?: any }): JSX.Element {
     const queryClient = new QueryClient({

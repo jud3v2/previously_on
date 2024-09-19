@@ -37,22 +37,20 @@ export default function SerieCard(props: any) {
     }
 
     return (
-        <div key={props.serie.id} className={"ml-10"}>
+        <div key={props.serie.id}>
             <div className='relative bg-black'>
                 <Link to={`/series/${props.serie.id}`}>
                     <img src={props.serie.images.poster} alt={props.serie.title}
                         className={'w-full h-96 rounded object-fit cursor-pointer hover:opacity-50'}/>
                 </Link>
-                <div className='absolute bottom-10 left-3 z-10'>
-                    <h2 className={"text-xl text-white font-bold text-white my-2"}>{props.serie.title}</h2>
+                <div className={"rounded-lg z-10"}>
+                    <div className='absolute top-2 left-2 z-10 border border-2 border-white px-1 rounded-full'>
+                        <h2 className={"text-sm text-white font-bold text-white"}>{props.serie.creation}</h2>
+                    </div>
+                    <div className='absolute top-2 right-2 z-10 border border-2 border-white px-1 rounded-full'>
+                        <h2 className={"text-sm text-white font-bold text-white "}>{props.serie.episodes} épisodes</h2>
+                    </div>
                 </div>
-                <div className='absolute top-2 left-2 z-10 border border-2 border-white px-4 rounded-full'>
-                    <h2 className={"text-lg text-white font-bold text-white my-2"}>{props.serie.creation}</h2>
-                </div>
-                <div className='absolute top-16 left-2 z-10 border border-2 border-white px-4 rounded-full'>
-                    <h2 className={"text-lg text-white font-bold text-white my-2"}>{props.serie.episodes} épisodes</h2>
-                </div>
-
             </div>
             <div className="mt-1">
                 {props.memberSeries?.find((s: any) => s.id === props.serie.id) ? (
