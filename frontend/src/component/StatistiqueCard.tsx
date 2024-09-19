@@ -40,7 +40,7 @@ export default function StatistiqueCard(props: any) {
     return (
         <div className="border border-black rounded-lg shadow">
             <div className="p-4 bg-transparent rounded-lg md:p-8">
-                <p className={'text-2xl ml-5 underline'}>Mes statistiques :</p>
+                <p className={'text-xl ml-5 underline'}>Mes statistiques :</p>
                 <dl className="grid grid-cols-6 gap-6 p-4 text-gray-900">
                     <div className="flex flex-col items-center justify-center">
                         <dt className="mb-2 text-3xl font-extrabold">{counts.badges}</dt>
@@ -63,7 +63,7 @@ export default function StatistiqueCard(props: any) {
                         <dd className="text-black">Épisodes à regarder</dd>
                     </div>
                     <div className="flex flex-col items-center justify-center">
-                        <dt className="mb-2 text-3xl font-extrabold">{user.stats.favorite_genre || "N/A"}</dt>
+                        <dt className="mb-2 text-3xl font-extrabold">{user.stats?.favorite_genre || "N/A"}</dt>
                         <dd className="text-black">Genre préféré</dd>
                     </div>
                     <div className="flex flex-col items-center justify-center">

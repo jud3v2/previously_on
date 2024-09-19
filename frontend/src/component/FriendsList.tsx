@@ -1,38 +1,50 @@
+import { useState } from 'react';
+import AddFriendModal from './AddFriendModal';
+import { IoMdAdd } from "react-icons/io";
+
 export default function FriendsList({ friends }: any) {
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
+    if (!friends || friends.length === 0) {
+        return <p>Aucun ami trouvé.</p>;
+    }
 
-  if (!friends || friends.length === 0) {
-      return <p>Aucun ami trouvé.</p>;
-  }
-  
 
   return (
-      <div className="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-4">
-              <h5 className="text-xl font-bold leading-none text-gray-900 dark:text-white">Mes ami(es)</h5>
+      <div className="w-full max-w-md p-4 bg-white border border-black rounded-lg shadow sm:p-8">
+          <div className=" items-center  mb-4">
+            <div className="flex items-center justify-between">
+            <p className={'text-xl ml-5 underline'}>Mes Ami(es) :</p>
+                <div><button
+                        className='flex items-center w-full border border-black rounded-full p-2 text-black hover:bg-black hover:text-white duration-300 ease-in'
+                        onClick={() => setIsModalOpen(true)}
+                        >
+                        <IoMdAdd /> Ajouter un ami
+                </button></div>
+               </div>
           </div>
           <div className="flow-root">
-              <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700">
+              <ul role="list" className="divide-y divide-black">
                   {friends.map((friend: any) => (
                       <li key={friend.id} className="py-3 sm:py-4">
                           <div className="flex items-center">
                               <div className="flex-shrink-0">
                                   <img className="w-8 h-8 rounded-full" src={friend.avatar || '/pictures/default-pic.jpg'} alt={`Avatar de ${friend.login}`} />
                               </div>
-                              <div className="flex-1 min-w-0 ms-4">
-                                  <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                      {friend.login}  {/* Utilisation du champ 'login' pour le nom d'utilisateur */}
+                              <div className="flex flex-row justify-between flex-1 min-w-0 ms-4">
+                                  <p className="text-lg font-medium text-black truncate">
+                                      {friend.login}
                                   </p>
-                                  {/* Si tu veux afficher plus d'infos, tu peux rajouter un autre champ si nécessaire */}
-                              </div>
-                              <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                  {friend.xp || 'N/A'} XP  {/* Affiche les points d'XP */}
+                                  <p className="text-lg font-medium text-black truncate">
+                                      {friend.xp} XP
+                                  </p>
                               </div>
                           </div>
                       </li>
                   ))}
               </ul>
           </div>
+          <AddFriendModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </div>
   );
 }
