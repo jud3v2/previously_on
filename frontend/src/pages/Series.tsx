@@ -11,7 +11,7 @@ export default function Series(props: any) {
     const [memberSeries, setMemberSeries] = useState<array>([]);
     const [filter, setFilter] = useState<object>({
         start: 0,
-        limit: 100,
+        limit: 10,
         order: 'popularity',
         filter: 'all',
         platform: 'all',
@@ -159,6 +159,7 @@ export default function Series(props: any) {
                                 borderRadius: '16px',
                                 overflow: 'hidden',
                             }}
+                            key={i}
                             className="mx-auto"
                         >
                             {/* Image Skeleton */}

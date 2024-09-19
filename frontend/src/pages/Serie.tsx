@@ -31,10 +31,10 @@ export default function Serie(props: any) {
     }
 
     const fetchSeriesEpisodesWithSeason = async () => {
-         const episodes = await axios.get('/shows/episodes?id=' + id);
-         setEpisodes(episodes.data.episodes);
-         setFilteredEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
-         return episodes.data;
+        const episodes = await axios.get('/shows/episodes?id=' + id);
+        setEpisodes(episodes.data.episodes);
+        setFilteredEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
+        return episodes.data;
     }
 
     const fetchMemberEpisodes = async () => {
@@ -76,41 +76,41 @@ export default function Serie(props: any) {
             setSerie(data.show);
             toast.success('Série désarchivée')
         } catch (error) {
-            toast.error('Erreur lors de l\'archivage de la série ' + error.response.data.errors[0].text )
+            toast.error('Erreur lors de l\'archivage de la série ' + error.response.data.errors[0].text)
         }
     }
 
-    const { data: seriesEpisodesWithSeason, isLoading: seriesEpisodesWithSeasonIsLoading } = useQuery({
+    const {data: seriesEpisodesWithSeason, isLoading: seriesEpisodesWithSeasonIsLoading} = useQuery({
         queryKey: ['seriesEpisodesWithSeason', id],
         queryFn: fetchSeriesEpisodesWithSeason
     });
 
-    const { data: memberEpisodes, isLoading: memberEpisodesIsLoading } = useQuery({
+    const {data: memberEpisodes, isLoading: memberEpisodesIsLoading} = useQuery({
         queryKey: ['memberEpisodes', id],
         queryFn: fetchMemberEpisodes
     });
 
-    const { data: serieData, isLoading: serieIsLoading } = useQuery({
+    const {data: serieData, isLoading: serieIsLoading} = useQuery({
         queryKey: ['serie', id],
         queryFn: fetchSerie
     });
 
     useEffect(() => {
-        if(serieData) {
+        if (serieData) {
             setSerie(serieData.show);
         }
 
-        if(seriesEpisodesWithSeason) {
+        if (seriesEpisodesWithSeason) {
             setEpisodes(episodes.data.episodes.filter((episode: any) => episode.season === currentSeason));
         }
 
-        if(memberEpisodes) {
+        if (memberEpisodes) {
             setEpisodes(memberEpisodes.shows);
         }
     }, []);
 
     useEffect(() => {
-        if(currentSeason) {
+        if (currentSeason) {
             // if the series have more than one season, we filter the episodes to show only the episodes of the current season
             setFilteredEpisodes(episodes.filter((episode: any) => episode.season === currentSeason))
         } else {
@@ -119,7 +119,7 @@ export default function Serie(props: any) {
         }
     }, [currentSeason])
 
-    const genres = serie.genres ?  Object.keys(serie?.genres)?.map(key => serie?.genres[key]) : null;
+    const genres = serie.genres ? Object.keys(serie?.genres)?.map(key => serie?.genres[key]) : null;
     const loadingLimit = 1;
 
 
@@ -146,35 +146,47 @@ export default function Serie(props: any) {
                     ? Array(loadingLimit)
                         .fill(0)
                         .map((_, i) => (
-                            <Box
-                                key={i}
-                                sx={{
-                                    width: 200,
-                                    height: 400,
-                                    position: 'relative',
-                                    borderRadius: '16px',
-                                    overflow: 'hidden',
-                                }}
-                                className="mx-auto m-3"
-                            >
-                                {/* Image Skeleton */}
-                                <Skeleton variant="rectangular" width="100%" height="100%"/>
+                            <div className={"w-full max-w-full flex"}>
+                                <div
+                                    key={i}
+                                    style={{
+                                        width: 200,
+                                        borderRadius: '16px',
+                                        overflow: 'hidden',
+                                    }}
+                                    className={"ml-3 mb-1"}
+                                >
+                                    {/* Image Skeleton */}
+                                    <Skeleton width="100%" height={150} sx={{
+                                        height: 150,
+                                        marginTop: 0,
+                                        paddingTop: 0,
+                                    }}/>
 
-                                {/* Top-left badge Skeleton (Year) */}
-                                <div className="absolute top-2 left-2 px-2 py-1 rounded-full">
-                                    <Skeleton width={40} height={20}/>
                                 </div>
+                                <div className={"w-full"}>
+                                    {/* Description Skeleton */}
+                                    <div className="m-3">
+                                        <Skeleton height={40} width={"50%"}/>
+                                        <Skeleton height={30} width={"80%"} count={10}/>
+                                        <Skeleton height={30} width={"80%"} count={10}/>
 
-                                {/* Top-right badge Skeleton (Episodes) */}
-                                <div className="absolute top-2 right-2 px-2 py-1 rounded-full">
-                                    <Skeleton width={40} height={20}/>
-                                </div>
+                                        <Skeleton height={40} width={"50%"}/>
+                                        <Skeleton height={20} width={"50%"} count={10}/>
 
-                                {/* Bottom Button Skeleton */}
-                                <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-                                    <Skeleton width="75%" height={40}/>
+                                        <Skeleton height={40} width={"50%"}/>
+                                        <Skeleton height={20} width={"30%"} count={10}/>
+
+                                        <Skeleton height={40} width={"50%"}/>
+                                        <Skeleton height={20} width={"50%"} count={10}/>
+
+                                        <Skeleton height={40} width={"50%"}/>
+                                        <Skeleton height={20} width={"20%"} count={10}/>
+                                        <Skeleton height={20} width={"20%"} count={10}/>
+                                        <Skeleton height={20} width={"20%"} count={10}/>
+                                    </div>
                                 </div>
-                            </Box>
+                            </div>
                         ))
                     : (
                         <div className="flex">
@@ -183,7 +195,7 @@ export default function Serie(props: any) {
                                 <img
                                     src={serie?.images?.poster}
                                     alt={serie?.title}
-                                    className="w-48 h-64 object-fit"
+                                    className="w-auto h-auto max-h-72 object-fit"
                                 />
                                 {serie?.user?.archived ? (
                                     <button

@@ -3,7 +3,7 @@ import React from "react";
 export default function SeasonComponent(props: any) {
     return (
         <>
-            <h2 className={"text-xl font-bold m-3"}>Les des saisons</h2>
+            <h2 className={"text-xl font-bold m-3"}>Liste des saisons</h2>
             <div className={'w-full flex m-3'}>
                 {props.serie?.seasons_details?.map((season: any) => {
                     return (

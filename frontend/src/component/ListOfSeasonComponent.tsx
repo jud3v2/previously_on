@@ -7,7 +7,7 @@ export default function ListOfSeasonComponent(props: any) {
         <>
             <h2 className={"text-xl font-bold m-3"}>Liste des épisodes de la saison {currentSeason}</h2>
             <div>
-                <button className={"bg-blue-500 text-white p-2 rounded m-3"} onClick={() => props.setFilterEpisodeSeen(!props.filterEpisodeSeen)}>Afficher les épisodes {props.filterEpisodeSeen ? 'déjà visionné' : 'non visionné et visionné'}</button>
+                <button className={"bg-blue-500 text-white p-2 rounded m-3"} onClick={() => props.setFilterEpisodeSeen(!props.filterEpisodeSeen)}>Afficher les épisodes {props.filterEpisodeSeen ? 'non visionné et déjà visionné' : 'non visionné'}</button>
             </div>
             <div className={"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 m-3"}>
                 {filteredEpisodes?.length > 0 ? filteredEpisodes?.map((episode: any) => {
