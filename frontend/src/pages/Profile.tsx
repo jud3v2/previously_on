@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import { fetchUserData } from "../helpers/functions.ts";
 import StatistiqueCard from "../component/StatistiqueCard.tsx";
 import FriendsList from "../component/FriendsList.tsx";
-import AddFriendModal from './AddFriendModal.tsx';
 
 export default function Profile(props: any) {
     const { user } = props;
@@ -12,8 +11,6 @@ export default function Profile(props: any) {
     const [loading, setLoading] = useState<boolean>(false);
     const [avatarUser, setAvatarUser] = useState<string>('');
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [isFileSelected, setIsFileSelected] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [friends, setFriends] = useState<any[]>([]);
 
     const handleAvatarChange = (event: any) => {
@@ -22,7 +19,6 @@ export default function Profile(props: any) {
             const formData = new FormData();
             formData.append('avatar', file);
             setFormDataState(formData);
-            setIsFileSelected(true);
         }
     };
 
@@ -40,7 +36,6 @@ export default function Profile(props: any) {
             fetchUserData().then(r => localStorage.setItem('user', JSON.stringify(r)));
             const newAvatarUrl = URL.createObjectURL(formDataState.get('avatar'));
             setAvatarUser(newAvatarUrl);
-            setIsFileSelected(false);
             toast.success('Avatar mis à jour');
         })
         .catch(error => {
@@ -81,9 +76,6 @@ export default function Profile(props: any) {
         fetchFriends();
     }, [props.user.id]);
 
-    console.log(friends);
-    console.log(user);
-
     return (
         <div className='container mx-auto mt-10'>
             <h1 className={'text-2xl'}>Mon profil :</h1>
@@ -96,36 +88,32 @@ export default function Profile(props: any) {
                             className={'w-40 h-40 rounded-full border border-1 border-black cursor-pointer hover:ring-2 hover:ring-blue-500'}
                             onClick={() => fileInputRef.current?.click()}
                         />
-                        {isFileSelected && (
-                            <button className='bg-transparent border border-1 border-black text-black hover:bg-black hover:text-white duration-300 ease-in rounded-full p-2 mt-2' onClick={handleClick}>Update Avatar</button>
-                        )}
+                        <button className='bg-transparent border border-1 border-black text-black hover:bg-black hover:text-white duration-300 ease-in rounded-full p-2 mt-5' onClick={handleClick}>Update Avatar</button>
                     </div>
-                    <div className='flex flex-col'>
-                        <h1 className={'text-2xl font-bold ml-5 mb-2'}>{user.login}</h1>
-                        <div className='mt-3 ml-5'>
-                            <StatistiqueCard user={user} />
+                    <div className="flex flex-col">
+                        <div className='flex flex-col'>
+                            <h1 className={'text-2xl font-bold ml-5 mb-2'}>{user.login}</h1>
+                            <div className='mt-3 ml-5'>
+                                <StatistiqueCard user={user} />
+                            </div>
+                        </div>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleAvatarChange}
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                        />
+                        <div className="ml-5 mt-5">
+                            <FriendsList friends={friends} />
                         </div>
                     </div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        ref={fileInputRef}
-                        style={{ display: 'none' }}
-                    />
                 </div>
                 <div className={'flex flex-col mt-5'}>
-                    <h1 className={'text-2xl'}>Mes ami(es) :</h1>
-                    <FriendsList friends={friends} />
-                    <button
-                        className="bg-blue-500 text-white mt-4 p-2 rounded-lg"
-                        onClick={() => setIsModalOpen(true)}
-                    >
-                        Ajouter un ami
-                    </button>
+                    <div className='flex mx-44'>
+                    </div>
                 </div>
             </div>
-            <AddFriendModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
         </div>
     );
 }
