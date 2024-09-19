@@ -7,6 +7,7 @@
 1. Via docker
 
 ```bash
+cd frontend/
 chmod +x run-docker.sh
 ./run-docker.sh
 ```
